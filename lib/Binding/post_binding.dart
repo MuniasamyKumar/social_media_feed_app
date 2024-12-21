@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:social_media_feed_app/Controllers/add_post_controller.dart';
 import 'package:social_media_feed_app/Controllers/post_controller.dart';
 
 
@@ -7,8 +8,10 @@ class InitialBinding extends Bindings {
   void dependencies() {
     print("InitialBinding.dependencies() called");
      Get.lazyPut<PostController>(() {
-      print("PostController added to dependencies");
       return PostController();
+    });
+     Get.lazyPut<AddPostController>(() {
+      return AddPostController();
     });
   }
 }
