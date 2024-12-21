@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class AddPostView extends StatelessWidget {
   const AddPostView({super.key});
 
@@ -21,30 +20,32 @@ class AddPostView extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: "Title",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: Icon(Icons.title),
-                ),
-              ),
-              SizedBox(height: 15),
+             
               TextField(
                 maxLines: 5,
                 decoration: InputDecoration(
-                  labelText: "Description",
+                  labelText: "Post Description",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  prefixIcon: Icon(Icons.description),
+                  prefixIcon: Icon(Icons.description,color: Colors.black,),
                 ),
               ),
               SizedBox(height: 15),
+               TextField(
+                decoration: InputDecoration(
+                  labelText: "Location",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: Icon(Icons.location_on_outlined,color: Colors.black,),
+                ),
+              ),
+              
+              SizedBox(height: 15),
               GestureDetector(
                 onTap: () {
-                  // Open image picker
+                  
                 },
                 child: Container(
                   height: 200,

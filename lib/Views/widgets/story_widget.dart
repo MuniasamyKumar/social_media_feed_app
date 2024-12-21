@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class StoryWidget extends StatelessWidget {
+  const StoryWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -20,7 +22,7 @@ class StoryWidget extends StatelessWidget {
 class StoryCircle extends StatelessWidget {
   final String username;
 
-  StoryCircle({required this.username});
+  const StoryCircle({super.key, required this.username});
 
   @override
   Widget build(BuildContext context) {
