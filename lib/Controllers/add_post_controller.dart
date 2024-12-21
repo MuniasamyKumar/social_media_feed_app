@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 class AddPostController extends GetxController {
   var selectedImage = Rxn<XFile>();
   final ImagePicker _picker = ImagePicker();
+  var isLoading = false.obs;
 
   Future<void> pickImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
@@ -17,12 +18,23 @@ class AddPostController extends GetxController {
   }
 
   Future<void> addPost(String description, String location) async {
-    if (selectedImage.value == null || description.isEmpty || location.isEmpty) {
+    if (selectedImage.value == null ||
+        description.isEmpty ||
+        location.isEmpty) {
       Get.snackbar("Error", "Please fill all fields and select an image");
       return;
     }
 
     try {
+      isLoading.value = true;
+
+      Get.dialog(
+        Center(
+          child: CircularProgressIndicator(),
+        ),
+        barrierDismissible: false,
+      );
+
       final imageUrl = await _uploadImage(File(selectedImage.value!.path));
       if (imageUrl == null) return;
 
@@ -40,8 +52,12 @@ class AddPostController extends GetxController {
 
       await FirebaseFirestore.instance.collection('posts').add(postData);
 
+      isLoading.value = false;
+      Get.back();
+
       Get.defaultDialog(
-        contentPadding: EdgeInsets.only(bottom: 20,left: 20,top: 10,right: 20),
+        contentPadding:
+            EdgeInsets.only(bottom: 20, left: 20, top: 10, right: 20),
         titlePadding: EdgeInsets.only(top: 20),
         title: "Success",
         middleText: "Post added successfully!",
@@ -52,6 +68,8 @@ class AddPostController extends GetxController {
         textConfirm: "OK",
       );
     } catch (e) {
+      isLoading.value = false;
+      Get.back();
       Get.snackbar("Error", "Failed to add post: $e");
     }
   }

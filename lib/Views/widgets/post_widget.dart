@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:social_media_feed_app/Controllers/post_controller.dart';
 import '../../models/post_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PostWidget extends GetView<PostController> {
   final PostModel post;
 
-   PostWidget({super.key, required this.post});
+  PostWidget({super.key, required this.post});
 
   final TextEditingController _commentController = TextEditingController();
 
@@ -40,7 +42,20 @@ class PostWidget extends GetView<PostController> {
               ],
             ),
           ),
-          Image.network(post.imageUrl),
+          CachedNetworkImage(
+  imageUrl: post.imageUrl,
+  placeholder: (context, url) => Shimmer.fromColors(
+    baseColor: Colors.grey[300]!,
+    highlightColor: Colors.grey[100]!,
+    child: Container(
+      height: 300, 
+      color: Colors.white,
+    ),
+  ),
+  errorWidget: (context, url, error) => Icon(Icons.error),
+  fit: BoxFit.cover,
+),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(post.description),
@@ -52,7 +67,9 @@ class PostWidget extends GetView<PostController> {
                 children: [
                   IconButton(
                     icon: Icon(
-                        post.isLiked ? Icons.favorite : Icons.favorite_border,color: Colors.red,),
+                      post.isLiked ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.red,
+                    ),
                     onPressed: () {
                       controller.toggleLike(post);
                     },
@@ -60,22 +77,30 @@ class PostWidget extends GetView<PostController> {
                   Text("${post.likes}"),
                   SizedBox(width: 10),
                   IconButton(
-                    icon: Icon(Icons.chat_bubble_outline_outlined,color: Colors.black,),
+                    icon: Icon(
+                      Icons.chat_bubble_outline_outlined,
+                      color: Colors.black,
+                    ),
                     onPressed: () {
                       _showCommentsBottomSheet(context);
                     },
                   ),
                   Text("${post.comments.length}"),
-                  IconButton(onPressed: () {
-                    
-                  }, icon: Icon(Icons.share,color: Colors.black,)),
+                  IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.share,
+                        color: Colors.black,
+                      )),
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
                   icon: Icon(
-                      post.isSaved ? Icons.bookmark : Icons.bookmark_border,color: Colors.black,),
+                    post.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                    color: Colors.black,
+                  ),
                   onPressed: () {
                     controller.toggleSave(post);
                   },
@@ -95,61 +120,58 @@ class PostWidget extends GetView<PostController> {
     );
   }
 
-void _showCommentsBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Comments",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-             
-              SizedBox(
-                height: 300, 
-                child: ListView.builder(
-                  itemCount: post.comments.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(post.comments[index].toString()),
-                    );
-                  },
+  void _showCommentsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Comments",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextField( 
-                controller: _commentController,
-                decoration: InputDecoration(
-                  labelText: "Add a comment",
-                  border: OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {
-                      String comment = _commentController.text.trim();
-                      if (comment.isNotEmpty) {
-                        controller.addComment(post, comment);
-                        _commentController.clear();
-                        Navigator.pop(context);
-                      }
+                SizedBox(height: 20),
+                TextField(
+                  controller: _commentController,
+                  decoration: InputDecoration(
+                    labelText: "Add a comment",
+                    border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: () {
+                        String comment = _commentController.text.trim();
+                        if (comment.isNotEmpty) {
+                          controller.addComment(post, comment);
+                          _commentController.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    itemCount: post.comments.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(post.comments[index].toString()),
+                      );
                     },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
+        );
+      },
+    );
+  }
 
   String _getTimeAgo(DateTime time) {
     final difference = DateTime.now().difference(time);

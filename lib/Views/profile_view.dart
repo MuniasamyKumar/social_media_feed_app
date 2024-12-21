@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:social_media_feed_app/Controllers/post_controller.dart';
+import 'package:social_media_feed_app/models/post_model.dart';
 
 class ProfileView extends StatelessWidget {
+  const ProfileView({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final PostController postController = Get.find<PostController>();
+
     return Scaffold(
       body: Column(
         children: [
-          // Top Profile Section
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             decoration: BoxDecoration(
               color: Colors.purple[50],
               borderRadius: BorderRadius.all(
-                Radius.circular(20)
+                Radius.circular(20),
               ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Profile Picture
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
-                      "https://plus.unsplash.com/premium_photo-1689539137236-b68e436248de?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyc29ufGVufDB8fDB8fHww"), // Replace with your profile image URL
+                  backgroundImage:
+                      NetworkImage(postController.profileImageUrl.value),
                 ),
                 SizedBox(height: 10),
-                // Username
                 Text(
                   "Muniasamy K",
                   style: TextStyle(
@@ -34,17 +38,15 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 5),
-                // Bio
                 Text(
                   "Flutter Developer | Tech Enthusiast | Traveler",
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 15),
-                // Follow Button
                 ElevatedButton(
-                  onPressed: () {
-                    // Handle Follow/Unfollow action
+                  onPressed: () async {
+                    postController.pickProfileImage();
                   },
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -55,27 +57,28 @@ class ProfileView extends StatelessWidget {
                   ),
                   child: Text(
                     "Edit Profile",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
               ],
             ),
           ),
           SizedBox(height: 20),
-          // Statistics Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatItem("Posts", "120"),
-                _buildStatItem("Followers", "2.3K"),
+                _buildStatItem("Posts", "${postController.posts.length}"),
+                _buildStatItem("Followers", "2.3M"),
                 _buildStatItem("Following", "180"),
               ],
             ),
           ),
           SizedBox(height: 20),
-          // Tabs Section
           Expanded(
             child: DefaultTabController(
               length: 3,
@@ -94,9 +97,9 @@ class ProfileView extends StatelessWidget {
                   Expanded(
                     child: TabBarView(
                       children: [
-                        _buildPostGrid(), // Posts Tab
-                        Center(child: Text("Liked Posts")), // Liked Tab
-                        Center(child: Text("Saved Items")), // Saved Tab
+                        _buildPostGrid(postController.posts),
+                        _buildPostGrid(postController.likedPosts),
+                        _buildPostGrid(postController.savedPosts),
                       ],
                     ),
                   ),
@@ -109,7 +112,6 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  // Widget for statistics
   Widget _buildStatItem(String label, String count) {
     return Column(
       children: [
@@ -132,8 +134,7 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  // Widget for post grid
-  Widget _buildPostGrid() {
+  Widget _buildPostGrid(List<PostModel> posts) {
     return GridView.builder(
       padding: EdgeInsets.all(10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -141,15 +142,14 @@ class ProfileView extends StatelessWidget {
         crossAxisSpacing: 5,
         mainAxisSpacing: 5,
       ),
-      itemCount: 12, // Replace with the actual post count
+      itemCount: posts.length,
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: NetworkImage(
-                "https://plus.unsplash.com/premium_photo-1689539137236-b68e436248de?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyc29ufGVufDB8fDB8fHww", // Replace with post image URL
-              ),
+              image:
+                  NetworkImage(posts[index].imageUrl), 
               fit: BoxFit.cover,
             ),
           ),

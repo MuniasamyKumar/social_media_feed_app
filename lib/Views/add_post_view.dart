@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:social_media_feed_app/Controllers/add_post_controller.dart';
 
-
 class AddPostView extends GetView<AddPostController> {
   final descriptionController = TextEditingController();
   final locationController = TextEditingController();
@@ -41,7 +40,8 @@ class AddPostView extends GetView<AddPostController> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  prefixIcon: Icon(Icons.location_on_outlined, color: Colors.black),
+                  prefixIcon:
+                      Icon(Icons.location_on_outlined, color: Colors.black),
                 ),
               ),
               SizedBox(height: 15),
@@ -61,7 +61,8 @@ class AddPostView extends GetView<AddPostController> {
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_photo_alternate, size: 50, color: Colors.grey),
+                                Icon(Icons.add_photo_alternate,
+                                    size: 50, color: Colors.grey),
                                 SizedBox(height: 10),
                                 Text(
                                   "Tap to upload an image",
@@ -69,7 +70,8 @@ class AddPostView extends GetView<AddPostController> {
                                 ),
                               ],
                             )
-                          : Image.file(File(controller.selectedImage.value!.path),
+                          : Image.file(
+                              File(controller.selectedImage.value!.path),
                               fit: BoxFit.cover),
                     ),
                   );
@@ -95,7 +97,8 @@ class AddPostView extends GetView<AddPostController> {
                   children: [
                     Icon(Icons.send, color: Colors.white),
                     SizedBox(width: 10),
-                    Text("Post", style: TextStyle(fontSize: 18, color: Colors.white)),
+                    Text("Post",
+                        style: TextStyle(fontSize: 18, color: Colors.white)),
                   ],
                 ),
               ),

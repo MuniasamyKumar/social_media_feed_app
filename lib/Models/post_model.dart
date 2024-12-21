@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostModel {
-  String id; 
+  String id;
   String imageUrl;
   String title;
   String location;
@@ -10,7 +10,7 @@ class PostModel {
   bool isLiked;
   bool isSaved;
   DateTime time;
-  List<String> comments; 
+  List<String> comments;
 
   PostModel({
     required this.id,
@@ -25,20 +25,18 @@ class PostModel {
     required this.comments,
   });
 
-  
   factory PostModel.fromDocument(DocumentSnapshot doc) {
     var data = doc.data() as Map<String, dynamic>;
     return PostModel(
-      id: doc.id, 
-      imageUrl: data['imageUrl'] ?? '',
-      title: data['title'] ?? '',
-      location: data['location'] ?? '',
-      description: data['description'] ?? '',
-      likes: data['likes'] ?? 0,
-      isLiked: data['isLiked'] ?? false,
-      isSaved: data['isSaved'] ?? false,
-      time: (data['time'] as Timestamp).toDate(), 
-      comments: List<String>.from(data['comments'] ?? [])
-    );
+        id: doc.id,
+        imageUrl: data['imageUrl'] ?? '',
+        title: data['title'] ?? '',
+        location: data['location'] ?? '',
+        description: data['description'] ?? '',
+        likes: data['likes'] ?? 0,
+        isLiked: data['isLiked'] ?? false,
+        isSaved: data['isSaved'] ?? false,
+        time: (data['time'] as Timestamp).toDate(),
+        comments: List<String>.from(data['comments'] ?? []));
   }
 }

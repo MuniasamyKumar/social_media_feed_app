@@ -1,42 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class NotificationsView extends StatelessWidget {
-  final List<Map<String, String>> notifications = [
-    {
-      "title": "New Like",
-      "description": "iiamcharlie liked your post.",
-      "time": "5 mins ago",
-    },
-    {
-      "title": "New Follower",
-      "description": "iiamcharles started following you.",
-      "time": "10 mins ago",
-    },
-    {
-      "title": "Comment",
-      "description": "anotheruser commented: 'Awesome pic!'",
-      "time": "1 hour ago",
-    },
-    {
-      "title": "Mention",
-      "description": "You were mentioned in a post by friendzone.",
-      "time": "3 hours ago",
-    },
-  ];
+  NotificationsView({super.key});
 
-   NotificationsView({super.key});
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        padding: const EdgeInsets.all(10),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          return NotificationCard(
-            title: notifications[index]["title"]!,
-            description: notifications[index]["description"]!,
-            time: notifications[index]["time"]!,
+      appBar: AppBar(
+        title: const Text("Notifications"),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firestore.collection('notifications').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No notifications available."));
+          }
+          final notifications = snapshot.data!.docs;
+          return ListView.builder(
+            padding: const EdgeInsets.all(10),
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final data = notifications[index].data() as Map<String, dynamic>;
+              final Timestamp? timestamp = data["time"];
+              final String formattedTime = timestamp != null
+                  ? DateFormat('yyyy-MM-dd hh:mm a').format(timestamp.toDate())
+                  : "Unknown Time";
+
+              return NotificationCard(
+                title: data["title"] ?? "No Title",
+                description: data["body"] ?? "No Description",
+                time: formattedTime,
+              );
+            },
           );
         },
       ),
@@ -49,7 +51,8 @@ class NotificationCard extends StatelessWidget {
   final String description;
   final String time;
 
-  const NotificationCard({super.key, 
+  const NotificationCard({
+    super.key,
     required this.title,
     required this.description,
     required this.time,
@@ -63,18 +66,18 @@ class NotificationCard extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.purple[100],
-          child: Icon(Icons.notifications, color: Colors.purple),
+          child: const Icon(Icons.notifications, color: Colors.purple),
         ),
         title: Text(
           title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(description),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               time,
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
